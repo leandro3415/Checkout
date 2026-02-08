@@ -12,7 +12,7 @@ const corsHeaders = {
   'Access-Control-Max-Age': '86400',
 };
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   Object.entries(corsHeaders).forEach(([k, v]) => res.setHeader(k, v));
 
   if (req.method === 'OPTIONS') {
