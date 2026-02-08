@@ -1,0 +1,403 @@
+{
+  "name": "PushInPay_PixCode_V2_Oferta_1_CF_Completo",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pix-push",
+        "responseMode": "responseNode",
+        "options": { "allowedOrigins": "https://finleve.vercel.app" }
+      },
+      "id": "9413de4b-d471-4b43-b43f-a0c562a8b180",
+      "name": "Webhook Chamar Pix",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-1008, 112],
+      "webhookId": "edcad7e2-3065-425b-b616-164fcefb6ae6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "f6a12e91-226a-4d81-8a82-790846f00e58", "name": "id_lead", "value": "={{ $json.body.id }}", "type": "string" },
+            { "id": "2762160d-090c-45cf-a6b4-a08599081fc2", "name": "value", "value": "={{ $json.body.value }}", "type": "string" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c81c19ad-3f14-4761-bceb-9c3c09135c18",
+      "name": "Variáveis",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-800, 112]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.abacatepay.com/v1/pixQrCode/create",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer abc_dev_HthWHAh54y1HRMt66pUzAphX" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [{ "name": "amount", "value": "={{ parseInt($json.value, 10) || 1000 }}" }]
+        },
+        "options": {}
+      },
+      "id": "11a82c7e-7298-42c5-bf99-2c5440eadfc1",
+      "name": "GerarPix",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-608, 112]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"qr_code\": \"{{ $json.data.brCode }}\",\n  \"qr_code_base64\": \"{{ $json.data.brCodeBase64 }}\"\n}",
+        "options": {}
+      },
+      "id": "eff0a8dd-04c3-418b-afd5-13bb606730b0",
+      "name": "Responde Pix",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [-416, 112]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": { "conditions": [{ "keyName": "id", "condition": "eq", "keyValue": "={{ $('Variáveis').item.json.id_lead }}" }] },
+        "fieldsUi": {
+          "fieldValues": [
+            { "fieldId": "pix_chave_oferta1", "fieldValue": "={{ $('GerarPix').item?.json?.data?.brCode ?? '' }}" },
+            { "fieldId": "id_transacao_oferta1", "fieldValue": "={{ $('GerarPix').item?.json?.data?.id ?? '' }}" }
+          ]
+        }
+      },
+      "id": "ca0830a2-bc1b-414c-879b-5037ef3360d0",
+      "name": "Atualiza Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [-224, 112],
+      "alwaysOutputData": true,
+      "credentials": { "supabaseApi": { "id": "vV7B95Sf7Sphx7jv", "name": "BASE CHAT VENDAS" } }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "chat n8n",
+        "remoteJid": "={{ $json.phone }}",
+        "messageText": "Acesse por aqui> ",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [-16, 112],
+      "id": "a6319792-ae74-4619-9ece-a85d7c6c68c4",
+      "name": "Enviar texto",
+      "credentials": { "evolutionApi": { "id": "m5nPbkcnkRK1LaI9", "name": "Evolution account" } }
+    },
+    {
+      "parameters": {
+        "content": "## ADD NA SUA TABELA LEAD\n\npix_chave_oferta1 (TEXT)\nid_transacao_oferta1 (TEXT)\n\nLink produto (entrega): https://drive.google.com/drive/folders/15p7h95MtRMtkYS9MCWm4cogBEMdovRyM?usp=sharing",
+        "height": 320,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [224, 0],
+      "typeVersion": 1,
+      "id": "538ba586-97f4-43d4-8da3-84b22d56b3b9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pushinpay.com.br/api/pix/cashIn",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"value\": {{ $json.value }},\n\"webhook_url\": \"https://webhook-cfn2.wpp-app.org/webhook/webhook-pushinpay\"\n}",
+        "options": {}
+      },
+      "id": "59e5ca11-84bd-4065-86e6-de702dc33450",
+      "name": "GerarPix1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [16, 1680]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "abacatepay-callback",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b001-payment-webhook",
+      "name": "Webhook abacatepay-callback",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-1008, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            { "id": "cond-pix-paid", "leftValue": "={{ $json.body.event }}", "rightValue": "billing.paid", "operator": { "type": "string", "operation": "equals" } },
+            { "id": "cond-has-pix", "leftValue": "={{ $json.body.data && $json.body.data.pixQrCode ? 'yes' : 'no' }}", "rightValue": "yes", "operator": { "type": "string", "operation": "equals" } }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b002-if-pix-paid",
+      "name": "Se PIX foi pago",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-800, 400]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "returnAll": false,
+        "limit": 1,
+        "filters": {
+          "conditions": [
+            { "keyName": "id_transacao_oferta1", "condition": "eq", "keyValue": "={{ $json.body.data.pixQrCode.id }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b003-get-lead",
+      "name": "Buscar Lead por transação",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [-592, 320],
+      "alwaysOutputData": true,
+      "credentials": { "supabaseApi": { "id": "vV7B95Sf7Sphx7jv", "name": "BASE CHAT VENDAS" } }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [{ "id": "cond-has-lead", "leftValue": "={{ $json.id }}", "rightValue": "", "operator": { "type": "string", "operation": "notEmpty" } }],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b003b-if-has-lead",
+      "name": "Se tem lead",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-464, 320]
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "chat n8n",
+        "remoteJid": "={{ $json.phone }}",
+        "messageText": "✅ *Pagamento confirmado!*\n\nAcesse seu produto aqui:\nhttps://drive.google.com/drive/folders/15p7h95MtRMtkYS9MCWm4cogBEMdovRyM?usp=sharing",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [-240, 260],
+      "id": "b004-enviar-produto",
+      "name": "Enviar produto WhatsApp",
+      "credentials": { "evolutionApi": { "id": "m5nPbkcnkRK1LaI9", "name": "Evolution account" } }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"received\": true}",
+        "options": {}
+      },
+      "id": "b005-respond-200",
+      "name": "Responde 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [-16, 320]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [
+            { "id": "cond-billing-paid", "leftValue": "={{ $json.body.event }}", "rightValue": "billing.paid", "operator": { "type": "string", "operation": "equals" } },
+            { "id": "cond-has-billing", "leftValue": "={{ $json.body.data && $json.body.data.billing ? 'yes' : 'no' }}", "rightValue": "yes", "operator": { "type": "string", "operation": "equals" } }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b002b-if-card-paid",
+      "name": "Se pagamento cartão",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-800, 520]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "card-phone", "name": "phone", "value": "={{ $json.body.data.billing.customer.metadata.cellphone && $json.body.data.billing.customer.metadata.cellphone.length === 11 ? '55' + $json.body.data.billing.customer.metadata.cellphone : ($json.body.data.billing.customer.metadata.cellphone || '') }}", "type": "string" },
+            { "id": "card-lead-id", "name": "lead_id", "value": "={{ $json.body.data.billing.externalId || $json.body.data.billing.id || '' }}", "type": "string" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b002c-dados-cartao",
+      "name": "Dados cartão",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-592, 440]
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "chat n8n",
+        "remoteJid": "={{ $json.phone }}",
+        "messageText": "✅ *Pagamento confirmado (cartão)!*\n\nAcesse seu produto aqui:\nhttps://drive.google.com/drive/folders/15p7h95MtRMtkYS9MCWm4cogBEMdovRyM?usp=sharing",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [-368, 440],
+      "id": "b002d-enviar-produto-cartao",
+      "name": "Enviar produto WhatsApp (cartão)",
+      "credentials": { "evolutionApi": { "id": "m5nPbkcnkRK1LaI9", "name": "Evolution account" } }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": { "conditions": [{ "keyName": "id", "condition": "eq", "keyValue": "={{ $json.lead_id }}" }] },
+        "fieldsUi": {
+          "fieldValues": [
+            { "fieldId": "produto_entregue_oferta1", "fieldValue": "={{ true }}" },
+            { "fieldId": "data_entrega_oferta1", "fieldValue": "={{ $now.toISO() }}" }
+          ]
+        }
+      },
+      "id": "b002e-update-entregue-cartao",
+      "name": "Atualiza lead entregue (cartão)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [-144, 440],
+      "credentials": { "supabaseApi": { "id": "vV7B95Sf7Sphx7jv", "name": "BASE CHAT VENDAS" } }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": { "conditions": [{ "keyName": "id", "condition": "eq", "keyValue": "={{ $json.id }}" }] },
+        "fieldsUi": {
+          "fieldValues": [
+            { "fieldId": "produto_entregue_oferta1", "fieldValue": "={{ true }}" },
+            { "fieldId": "data_entrega_oferta1", "fieldValue": "={{ $now.toISO() }}" }
+          ]
+        }
+      },
+      "id": "b004b-update-entregue",
+      "name": "Atualiza lead entregue",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [-128, 260],
+      "credentials": { "supabaseApi": { "id": "vV7B95Sf7Sphx7jv", "name": "BASE CHAT VENDAS" } }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "subscription-checkout",
+        "responseMode": "responseNode",
+        "options": { "allowedOrigins": "https://finleve.vercel.app" }
+      },
+      "id": "c001-card-webhook",
+      "name": "Webhook Cartão (Cheap Plano)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-1008, 640]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "c-id-lead", "name": "id_lead", "value": "={{ $json.body.id }}", "type": "string" },
+            { "id": "c-value", "name": "value", "value": "={{ $json.body.value || 1000 }}", "type": "number" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c002-var-card",
+      "name": "Variáveis Cartão",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-800, 640]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.abacatepay.com/v1/billing/create",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer abc_dev_HthWHAh54y1HRMt66pUzAphX" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"frequency\": \"ONE_TIME\",\n  \"methods\": [\"CARD\"],\n  \"products\": [{\n    \"externalId\": \"cheap-plano\",\n    \"name\": \"FinLeve - Plano\",\n    \"description\": \"Acesso ao produto FinLeve.\",\n    \"quantity\": 1,\n    \"price\": {{ $json.value }}\n  }],\n  \"returnUrl\": \"https://finleve.vercel.app\",\n  \"completionUrl\": \"https://finleve.vercel.app\",\n  \"externalId\": \"{{ $json.id_lead }}\"\n}",
+        "options": {}
+      },
+      "id": "c003-billing-card",
+      "name": "Criar Billing Cartão",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-576, 640]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"checkout_url\": \"{{ $json.data.url }}\"\n}",
+        "options": {}
+      },
+      "id": "c004-respond-checkout",
+      "name": "Responde Checkout URL",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [-352, 640]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Chamar Pix": { "main": [[{ "node": "Variáveis", "type": "main", "index": 0 }]] },
+    "Variáveis": { "main": [[{ "node": "GerarPix", "type": "main", "index": 0 }]] },
+    "GerarPix": { "main": [[{ "node": "Responde Pix", "type": "main", "index": 0 }]] },
+    "Responde Pix": { "main": [[{ "node": "Atualiza Lead", "type": "main", "index": 0 }]] },
+    "Atualiza Lead": { "main": [[{ "node": "Enviar texto", "type": "main", "index": 0 }]] },
+    "Webhook abacatepay-callback": { "main": [[{ "node": "Se PIX foi pago", "type": "main", "index": 0 }]] },
+    "Se PIX foi pago": { "main": [[{ "node": "Buscar Lead por transação", "type": "main", "index": 0 }], [{ "node": "Se pagamento cartão", "type": "main", "index": 0 }]] },
+    "Buscar Lead por transação": { "main": [[{ "node": "Se tem lead", "type": "main", "index": 0 }]] },
+    "Se tem lead": { "main": [[{ "node": "Enviar produto WhatsApp", "type": "main", "index": 0 }], [{ "node": "Responde 200", "type": "main", "index": 0 }]] },
+    "Enviar produto WhatsApp": { "main": [[{ "node": "Atualiza lead entregue", "type": "main", "index": 0 }]] },
+    "Atualiza lead entregue": { "main": [[{ "node": "Responde 200", "type": "main", "index": 0 }]] },
+    "Se pagamento cartão": { "main": [[{ "node": "Dados cartão", "type": "main", "index": 0 }], [{ "node": "Responde 200", "type": "main", "index": 0 }]] },
+    "Dados cartão": { "main": [[{ "node": "Enviar produto WhatsApp (cartão)", "type": "main", "index": 0 }]] },
+    "Enviar produto WhatsApp (cartão)": { "main": [[{ "node": "Atualiza lead entregue (cartão)", "type": "main", "index": 0 }]] },
+    "Atualiza lead entregue (cartão)": { "main": [[{ "node": "Responde 200", "type": "main", "index": 0 }]] },
+    "Webhook Cartão (Cheap Plano)": { "main": [[{ "node": "Variáveis Cartão", "type": "main", "index": 0 }]] },
+    "Variáveis Cartão": { "main": [[{ "node": "Criar Billing Cartão", "type": "main", "index": 0 }]] },
+    "Criar Billing Cartão": { "main": [[{ "node": "Responde Checkout URL", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1", "availableInMCP": false },
+  "meta": { "templateCredsSetupCompleted": true },
+  "tags": []
+}
