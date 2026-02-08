@@ -1120,7 +1120,7 @@
       const panelCard = document.getElementById('panel-card');
       const methodTabs = document.querySelectorAll('.payment-method-tab');
 
-      // Proxy na mesma origem evita CORS (chamada direta ao n8n dava "Failed to fetch" por CORS)
+// Proxy na mesma origem evita CORS (chamada direta ao n8n dava "Failed to fetch" por CORS)
       const SUBSCRIPTION_WEBHOOK_URL = '/api/subscription-checkout';
 
       function formatBRL(cents) {
