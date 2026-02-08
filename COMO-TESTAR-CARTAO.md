@@ -10,7 +10,7 @@ Passo a passo para testar o fluxo de **cartão (Cheap Plano)** em DEV.
 2. O n8n cria uma cobrança com **cartão** na AbacatePay e devolve **checkout_url**.
 3. Você é redirecionado para a página da AbacatePay para pagar com cartão.
 4. Em **DEV**, o pagamento é simulado (sem cobrança real).
-5. Quando o pagamento é confirmado, a AbacatePay envia **billing.paid** para **abacatepay-callback** (payload com `data.billing`).
+5. Quando o pagamento é confirmado, a AbacatePay envia **billing.paid** para **----** (payload com `data.billing`).
 
 ---
 
@@ -21,9 +21,9 @@ Passo a passo para testar o fluxo de **cartão (Cheap Plano)** em DEV.
 
 2. **Abra o checkout com o id do lead na URL**  
    Exemplo:  
-   `https://finleve.vercel.app?id=SEU_LEAD_ID`  
+   `---`  
    ou  
-   `https://finleve.vercel.app/SEU_LEAD_ID`
+   `----`
 
 3. **Escolha “Cartão de crédito”**  
    Clique na aba **Cartão de crédito**.
@@ -47,7 +47,7 @@ Passo a passo para testar o fluxo de **cartão (Cheap Plano)** em DEV.
 ## Opção B – Testar direto no n8n (Postman/curl)
 
 1. **POST** para:  
-   `https://n8n-agente-n8n.vugtol.easypanel.host/webhook/subscription-checkout`
+   `h----`
 
 2. **Headers:**  
    `Content-Type: application/json`
@@ -65,7 +65,7 @@ Passo a passo para testar o fluxo de **cartão (Cheap Plano)** em DEV.
 4. **Resposta esperada:**  
    ```json
    {
-     "checkout_url": "https://pay.abacatepay.com/bill-xxxxx"
+     "c----"
    }
    ```
 
@@ -76,7 +76,7 @@ Passo a passo para testar o fluxo de **cartão (Cheap Plano)** em DEV.
 ## Se der erro
 
 - **“Webhook não retornou checkout_url”**  
-  Confira no n8n: nó **Criar Billing Cartão** (URL da AbacatePay, Bearer **DEV**) e nó **Responde Checkout URL** (resposta com `checkout_url` = `$json.data.url`).
+  Confira no n8n: nó **Criar Billing Cartão** (URL da AbacatePay, Bearer **DEV**) e nó **Responde Checkout URL** (resposta com `checkout_url` = `$--`).
 
 - **401 na AbacatePay**  
   Use a chave de API **DEV** (`abc_dev_...`) no nó **Criar Billing Cartão**.
