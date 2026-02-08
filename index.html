@@ -574,6 +574,33 @@
       gap: 0.75rem;
     }
 
+    .card-form-step {
+      display: none;
+    }
+    .card-form-step.active {
+      display: block;
+    }
+    .card-form-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .card-form-actions .generate-button {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .card-form-actions .btn-secondary {
+      background: var(--surface);
+      color: var(--primary);
+      border: 2px solid var(--border);
+      box-shadow: none;
+    }
+    .card-form-actions .btn-secondary:hover {
+      background: var(--surface-soft);
+      border-color: var(--secondary);
+    }
+
     .generate-button {
       width: 100%;
       margin-top: 1.25rem;
@@ -1033,51 +1060,63 @@
         </div>
       </div>
 
-      <!-- Painel Cartão — valor fixo + dados do cartão -->
+      <!-- Painel Cartão — duas etapas: cartão depois dados pessoais -->
       <div id="panel-card" class="payment-method-panel">
         <div class="total-bar">
           <span>Total</span>
           <span class="amount" id="total-amount-card">R$ 10,00</span>
         </div>
         <form id="card-form" class="card-form" novalidate>
-          <div class="form-group">
-            <label class="form-label" for="card-number">Número do cartão</label>
-            <input type="text" id="card-number" class="form-input" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" autocomplete="cc-number">
-            <span class="form-error" id="card-number-error">Número do cartão é obrigatório.</span>
-          </div>
-          <div class="form-row">
+          <!-- Etapa 1: dados do cartão -->
+          <div id="card-step-1" class="card-form-step active">
             <div class="form-group">
-              <label class="form-label" for="card-expiry">Validade</label>
-              <input type="text" id="card-expiry" class="form-input" placeholder="MM/AA" maxlength="5" inputmode="numeric" autocomplete="cc-exp">
-              <span class="form-error" id="card-expiry-error">Validade é obrigatória.</span>
+              <label class="form-label" for="card-number">Número do cartão</label>
+              <input type="text" id="card-number" class="form-input" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" autocomplete="cc-number">
+              <span class="form-error" id="card-number-error">Número do cartão é obrigatório.</span>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="card-expiry">Validade</label>
+                <input type="text" id="card-expiry" class="form-input" placeholder="MM/AA" maxlength="5" inputmode="numeric" autocomplete="cc-exp">
+                <span class="form-error" id="card-expiry-error">Validade é obrigatória.</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="card-cvv">CVV</label>
+                <input type="text" id="card-cvv" class="form-input" placeholder="3 ou 4 dígitos" maxlength="4" inputmode="numeric" autocomplete="cc-csc">
+                <span class="form-error" id="card-cvv-error">CVV é obrigatório.</span>
+              </div>
             </div>
             <div class="form-group">
-              <label class="form-label" for="card-cvv">CVV</label>
-              <input type="text" id="card-cvv" class="form-input" placeholder="3 ou 4 dígitos" maxlength="4" inputmode="numeric" autocomplete="cc-csc">
-              <span class="form-error" id="card-cvv-error">CVV é obrigatório.</span>
+              <label class="form-label" for="card-name">Nome do titular</label>
+              <input type="text" id="card-name" class="form-input" placeholder="Digite o nome impresso no cartão" autocomplete="cc-name">
+              <span class="form-error" id="card-name-error">Nome do titular é obrigatório.</span>
+            </div>
+            <div class="card-form-actions">
+              <button type="button" class="generate-button" id="card-step-1-next"><strong>Continuar</strong></button>
             </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="card-name">Nome do titular</label>
-            <input type="text" id="card-name" class="form-input" placeholder="Digite o nome impresso no cartão" autocomplete="cc-name">
-            <span class="form-error" id="card-name-error">Nome do titular é obrigatório.</span>
+          <!-- Etapa 2: e-mail, celular e CPF -->
+          <div id="card-step-2" class="card-form-step">
+            <div class="form-group">
+              <label class="form-label" for="customer-email">E-mail</label>
+              <input type="email" id="customer-email" class="form-input" placeholder="seu@email.com" autocomplete="email">
+              <span class="form-error" id="customer-email-error">E-mail é obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="customer-phone">Celular (com DDD)</label>
+              <input type="tel" id="customer-phone" class="form-input" placeholder="(11) 99999-9999" maxlength="16" autocomplete="tel">
+              <span class="form-error" id="customer-phone-error">Celular é obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="customer-cpf">CPF</label>
+              <input type="text" id="customer-cpf" class="form-input" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off">
+              <span class="form-error" id="customer-cpf-error">CPF é obrigatório e deve ser válido.</span>
+            </div>
+            <div class="card-form-actions">
+              <button type="button" class="generate-button btn-secondary" id="card-step-2-back"><strong>Voltar</strong></button>
+              <button type="submit" class="generate-button" id="subscribe-card-button"><strong>Finalizar</strong></button>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="customer-email">E-mail</label>
-            <input type="email" id="customer-email" class="form-input" placeholder="seu@email.com" autocomplete="email">
-            <span class="form-error" id="customer-email-error">E-mail é obrigatório.</span>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="customer-phone">Celular (com DDD)</label>
-            <input type="tel" id="customer-phone" class="form-input" placeholder="(11) 99999-9999" maxlength="16" autocomplete="tel">
-            <span class="form-error" id="customer-phone-error">Celular é obrigatório.</span>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="customer-cpf">CPF</label>
-            <input type="text" id="customer-cpf" class="form-input" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off">
-            <span class="form-error" id="customer-cpf-error">CPF é obrigatório e deve ser válido.</span>
-          </div>
-          <button class="generate-button" id="subscribe-card-button" type="submit"><strong>Finalizar</strong></button>
         </form>
       </div>
 
@@ -1162,6 +1201,10 @@
           methodTabs.forEach(t => { if (t !== tab) t.setAttribute('aria-pressed', 'false'); });
           panelPix.classList.toggle('active', method === 'pix');
           panelCard.classList.toggle('active', method === 'card');
+          if (method === 'card') {
+            document.getElementById('card-step-1').classList.add('active');
+            document.getElementById('card-step-2').classList.remove('active');
+          }
         });
       });
 
@@ -1348,6 +1391,37 @@
         if (show) { el.classList.add('error'); err.classList.add('visible'); }
         else { el.classList.remove('error'); err.classList.remove('visible'); }
       }
+
+      const cardStep1 = document.getElementById('card-step-1');
+      const cardStep2 = document.getElementById('card-step-2');
+
+      function validateCardStep1() {
+        const number = (cardNumberInput.value || '').replace(/\D/g, '');
+        const expiry = cardExpiryInput.value.trim();
+        const cvv = (cardCvvInput.value || '').replace(/\D/g, '');
+        const name = (cardNameInput.value || '').trim();
+        let ok = true;
+        showCardError('card-number', number.length < 13);
+        if (number.length < 13) ok = false;
+        showCardError('card-expiry', expiry.length < 5);
+        if (expiry.length < 5) ok = false;
+        showCardError('card-cvv', cvv.length < 3);
+        if (cvv.length < 3) ok = false;
+        showCardError('card-name', !name);
+        if (!name) ok = false;
+        return ok;
+      }
+
+      document.getElementById('card-step-1-next').addEventListener('click', () => {
+        if (!validateCardStep1()) return;
+        cardStep1.classList.remove('active');
+        cardStep2.classList.add('active');
+      });
+
+      document.getElementById('card-step-2-back').addEventListener('click', () => {
+        cardStep2.classList.remove('active');
+        cardStep1.classList.add('active');
+      });
 
       function validateCardForm() {
         const number = (cardNumberInput.value || '').replace(/\D/g, '');
