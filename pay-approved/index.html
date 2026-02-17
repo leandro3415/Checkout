@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compra Aprovada - FinLeve</title>
     <meta http-equiv="refresh" content="3;url=https://wa.me/558896947109?text=Solicitando%20Acesso%20e%20Modo%20de%20Uso%20do%20FinLeve...">
+    <title>Compra Aprovada - FinLeve</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -50,7 +50,7 @@
         <p class="texto">Compra Aprovada ✅ ...</p>
     </div>
 
-    <!-- Facebook Pixel - Evento Purchase (Compra Aprovada) -->
+    <!-- Facebook Pixel - Evento Purchase no carregamento + redirect automático -->
     <script>
         !function(f,b,e,v,n,t,s)
         {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -63,7 +63,7 @@
         fbq('init', '884790417739322');
         fbq('track', 'Purchase');
 
-        // Redirecionamento automático após 2.5s (tempo para o Pixel disparar)
+        // Redirect automático após delay (tempo para o Pixel enviar o evento Purchase)
         setTimeout(function() {
             window.location.href = 'https://wa.me/558896947109?text=Solicitando%20Acesso%20e%20Modo%20de%20Uso%20do%20FinLeve...';
         }, 2500);
