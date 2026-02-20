@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinLeve - Suas finanças, mais leves</title>
+    <!-- Meta Pixel (Facebook) -->
+    <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '884790417739322');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #1F2937;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page {
+            display: none;
+            flex: 1;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Logo - imagem da pasta media */
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .logo-avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 30px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #4B5563;
+        }
+
+        .progress-percentage {
+            color: #4da3ff;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #E5E7EB;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4da3ff, #2d7dd2);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Cards */
+        .main-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: #1F2937;
+        }
+
+        h2 {
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 16px;
+            color: #1F2937;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .highlight-orange {
+            color: #4da3ff;
+        }
+
+        .highlight-green {
+            color: #22C55E;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #4B5563;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .instruction {
+            font-size: 14px;
+            color: #4B5563;
+            margin-bottom: 24px;
+        }
+
+        /* Divider */
+        .divider {
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #4da3ff, #2d7dd2);
+            border-radius: 2px;
+            margin: 24px auto;
+        }
+
+        /* Feature Cards - ANEXO 2 style */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            justify-items: center;
+            margin: 24px 0;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features .feature-card:nth-child(3) {
+            grid-column: 1 / -1;
+            justify-self: center;
+            max-width: calc(50% - 6px);
+        }
+
+        .feature-card {
+            background: #fafafa;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1F2937;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .feature-text {
+            flex: 1;
+        }
+
+        .feature-check {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 50%;
+            background: #22C55E;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #4da3ff, #2d7dd2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            text-decoration: none;
+            padding: 18px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(45, 125, 210, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(77, 163, 255, 0.5);
+        }
+
+        .btn-option {
+            background: #ffffff;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 18px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 500px;
+            text-align: left;
+            color: #1F2937;
+        }
+
+        .btn-option:hover {
+            border-color: #2d7dd2;
+            background: #f9fafb;
+            transform: translateY(-2px);
+        }
+
+        .btn-option.selected {
+            border-color: #2d7dd2;
+            background: #f9fafb;
+        }
+
+        .option-emoji {
+            font-size: 24px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+
+        /* Time Badge */
+        .time-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #4B5563;
+        }
+
+        .time-icon {
+            font-size: 16px;
+        }
+
+        /* WhatsApp Chat */
+        .whatsapp-chat {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            max-width: 350px;
+            width: 100%;
+            margin: 24px auto;
+        }
+
+        .chat-header {
+            background: #075E54;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-avatar svg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-info {
+            flex: 1;
+        }
+
+        .chat-name {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .chat-status {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+
+        .chat-body {
+            background: #f5f5f5;
+            padding: 16px;
+            min-height: 280px;
+        }
+
+        .chat-message {
+            background: #DCF8C6;
+            color: #1a1a1a;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            max-width: 80%;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        #typing-text, .chat-message #typing-text {
+            color: #1a1a1a !important;
+        }
+
+        .chat-message.response {
+            background: #ffffff;
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #2d3748;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .chat-message .message-time {
+            color: #4a5568;
+        }
+
+        .chat-input {
+            background: #f9fafb;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-placeholder {
+            flex: 1;
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* Animação de digitação */
+        .typing-animation {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid #075E54;
+            animation: typing 2s steps(25, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #075E54 }
+        }
+
+        /* Mensagem do bot */
+        .bot-message {
+            background: #ffffff;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            max-width: 85%;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(10px);
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bot-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .bot-check {
+            color: #22C55E;
+            font-size: 18px;
+        }
+
+        .bot-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .bot-detail-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #4B5563;
+        }
+
+        .bot-detail-icon {
+            font-size: 14px;
+            width: 18px;
+            text-align: center;
+        }
+
+        /* Bolinhas de digitação */
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: #ffffff;
+            border-radius: 16px;
+            width: fit-content;
+            margin-bottom: 8px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #9CA3AF;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0.6); }
+            40% { transform: scale(1); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Loading Page Styles */
+        .loading-container {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .loading-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1F2937;
+            margin-bottom: 12px;
+        }
+
+        .loading-subtitle {
+            font-size: 16px;
+            color: #6B7280;
+            margin-bottom: 32px;
+        }
+
+        .loading-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .loading-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            background: #ffffff;
+            transition: all 0.4s ease;
+        }
+
+        .loading-step.active {
+            border-color: #22C55E;
+            background: #f0fdf4;
+        }
+
+        .loading-step.completed {
+            border-color: #22C55E;
+            background: #f0fdf4;
+        }
+
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #D1D5DB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .loading-step.active .step-icon,
+        .loading-step.completed .step-icon {
+            border-color: #22C55E;
+            background: #22C55E;
+            color: white;
+        }
+
+        .step-text {
+            font-size: 16px;
+            color: #6B7280;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .loading-step.active .step-text,
+        .loading-step.completed .step-text {
+            color: #15803D;
+        }
+
+        .loading-progress-container {
+            margin-top: 24px;
+        }
+
+        .loading-progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .loading-progress-percentage {
+            color: #2d7dd2;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .loading-progress-bar {
+            height: 10px;
+            background: #E5E7EB;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .loading-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4da3ff, #2d7dd2);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* Pulse animation for active step */
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+        }
+
+        .loading-step.active {
+            animation: pulse-green 2s infinite;
+        }
+
+        /* Result Page */
+        .fact-card {
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .fact-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .fact-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #4da3ff, #2d7dd2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .fact-content h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 4px;
+        }
+
+        .fact-content p {
+            font-size: 14px;
+            color: #4B5563;
+        }
+
+        /* Article Preview */
+        .article-preview {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .article-header {
+            background: #f3f4f6;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .article-menu {
+            color: #374151;
+            font-size: 20px;
+        }
+
+        .article-title {
+            color: #1F2937;
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: 1px;
+        }
+
+        .article-search {
+            color: #374151;
+            font-size: 20px;
+        }
+
+        .article-body {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .article-text h4 {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1F2937;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .article-author {
+            font-size: 14px;
+            color: #9CA3AF;
+            font-style: italic;
+            margin-bottom: 16px;
+        }
+
+        .article-excerpt {
+            font-size: 13px;
+            color: #4B5563;
+            line-height: 1.6;
+        }
+
+        .article-image {
+            border-radius: 8px;
+            overflow: hidden;
+            height: 180px;
+        }
+
+        .article-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 600px;
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .testimonial-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .testimonial-stars {
+            color: #2d7dd2;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .testimonial-text {
+            font-size: 15px;
+            color: #4B5563;
+            line-height: 1.6;
+            font-style: italic;
+            margin-bottom: 12px;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: #1F2937;
+            font-size: 14px;
+        }
+
+        .testimonial-role {
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            margin: 32px 0;
+        }
+
+        .cta-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        /* Responsive - Mobile ANEXO 2 */
+        @media (max-width: 640px) {
+            .container {
+                padding: 16px;
+            }
+
+            .main-card {
+                padding: 28px 20px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            /* Features: empilhados verticalmente no mobile - layout ANEXO 2 */
+            .features {
+                grid-template-columns: 1fr;
+                max-width: 100%;
+                gap: 14px;
+            }
+
+            .features .feature-card:nth-child(3) {
+                grid-column: 1;
+                max-width: 100%;
+            }
+
+            .feature-card {
+                padding: 20px 24px;
+                font-size: 16px;
+                gap: 16px;
+            }
+
+            .feature-icon {
+                font-size: 28px;
+            }
+
+            .feature-check {
+                width: 32px;
+                height: 32px;
+                min-width: 32px;
+                font-size: 16px;
+            }
+
+            .article-body {
+                grid-template-columns: 1fr;
+            }
+
+            .whatsapp-chat {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Página 1: Landing -->
+        <div class="page active" id="page-landing">
+            <div class="main-card">
+                <h1>Você sabe que precisa organizar suas finanças mas tem <span class="highlight-orange">muita dificuldade?</span></h1>
+                
+                <p class="subtitle">Você está a <span class="highlight-orange">2 minutos</span> de uma revelação que pode mudar completamente a forma de organizar e controlar suas finanças!</p>
+                
+                <div class="divider"></div>
+                
+                <p class="subtitle">Você vai descobrir uma solução <span class="highlight-orange">rápida, prática e eficaz</span> que vai te fazer ter o controle de todo o seu dinheiro na palma da sua mão e direto no <span class="highlight-green" style="font-weight: 800;">SEU WHATSAPP!</span></p>
+                
+                <p class="instruction">Mas antes vamos entender um pouco mais sobre as suas necessidades!</p>
+                
+                <div class="features">
+                    <div class="feature-card">
+                        <span class="feature-icon">💰</span>
+                        <span class="feature-text">Controle total</span>
+                        <span class="feature-check">✓</span>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">✨</span>
+                        <span class="feature-text">Fácil de usar</span>
+                        <span class="feature-check">✓</span>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">📱</span>
+                        <span class="feature-text">No WhatsApp</span>
+                        <span class="feature-check">✓</span>
+                    </div>
+                </div>
+                
+                <button class="btn-primary" onclick="goToPage('page-question1')">
+                    SIM, quero descobrir se serve para mim!
+                    <span>→</span>
+                </button>
+                
+                <div class="time-badge">
+                    <span class="time-icon">⏱️</span>
+                    <span>Leva apenas 2 minutos</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Página 2: Pergunta 1 -->
+        <div class="page" id="page-question1">
+            <div class="logo">
+                <img src="media/logo-finleve.png" alt="FinLeve - Suas finanças, mais leves" class="logo-img">
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>Pergunta 1 de 3</span>
+                    <span class="progress-percentage">33%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 33%"></div>
+                </div>
+            </div>
+
+            <h2>Se você pudesse registrar seus gastos em <span class="highlight-orange">3 segundos via WhatsApp</span>, você acha que conseguiria manter sua organização financeira em dia?</h2>
+            
+            <p class="instruction">Seja 100% sincero, não tem resposta certa ou errada!</p>
+
+            <div class="whatsapp-chat">
+                <div class="chat-header">
+                    <div class="chat-avatar">
+                        <img src="media/logo-finleve.png" alt="FinLeve" class="logo-avatar">
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-name">FinLeve</div>
+                        <div class="chat-status">online</div>
+                    </div>
+                </div>
+                <div class="chat-body" id="chat-body">
+                    <!-- Mensagem do usuário (aparece com animação de digitação) -->
+                    <div class="chat-message hidden" id="user-message" style="margin-left: auto; margin-right: 0;">
+                        <span id="typing-text"></span>
+                        <div class="message-time" id="message-time" style="opacity: 0;">11:28 ✓✓</div>
+                    </div>
+                    
+                    <!-- Bolinhas de digitação do bot -->
+                    <div class="typing-dots hidden" id="bot-typing" style="margin-top: 12px;">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                    
+                    <!-- Resposta do bot -->
+                    <div class="bot-message hidden" id="bot-response" style="margin-top: 12px;">
+                        <div class="bot-header">
+                            <span class="bot-check">✅</span>
+                            <span>Transação Registrada!</span>
+                        </div>
+                        <div class="bot-details">
+                            <div class="bot-detail-row">
+                                <span class="bot-detail-icon">💳</span>
+                                <span>Despesa</span>
+                            </div>
+                            <div class="bot-detail-row">
+                                <span class="bot-detail-icon">💵</span>
+                                <span>Valor: R$ 120,00</span>
+                            </div>
+                            <div class="bot-detail-row">
+                                <span class="bot-detail-icon">📝</span>
+                                <span>Descrição: gasolina</span>
+                            </div>
+                            <div class="bot-detail-row">
+                                <span class="bot-detail-icon">📁</span>
+                                <span>Categoria: Transporte</span>
+                            </div>
+                            <div class="bot-detail-row">
+                                <span class="bot-detail-icon">📅</span>
+                                <span>Data: 30/01/2026</span>
+                            </div>
+                        </div>
+                        <div class="message-time" style="margin-top: 8px;">11:28</div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <div class="input-placeholder" id="input-placeholder">Digite uma mensagem...</div>
+                </div>
+            </div>
+
+            <div class="options-list">
+                <button class="btn-option" onclick="goToPage('page-question2')">
+                    <span class="option-emoji">📓</span>
+                    <span>Não. Prefiro caderno ou planilha complexa.</span>
+                </button>
+                <button class="btn-option" onclick="goToPage('page-question2')">
+                    <span class="option-emoji">🤔</span>
+                    <span>Talvez ajudasse</span>
+                </button>
+                <button class="btn-option selected" onclick="goToPage('page-question2')">
+                    <span class="option-emoji">✨</span>
+                    <span>SIM! Seria muito mais simples organizar tudo.</span>
+                </button>
+            </div>
+
+            <div class="footer">© 2025 - FinLeve | Todos os direitos reservados</div>
+        </div>
+
+        <!-- Página 3: Pergunta 2 -->
+        <div class="page" id="page-question2">
+            <div class="logo">
+                <img src="media/logo-finleve.png" alt="FinLeve - Suas finanças, mais leves" class="logo-img">
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>Pergunta 2 de 3</span>
+                    <span class="progress-percentage">67%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 67%"></div>
+                </div>
+            </div>
+
+            <h2>Como você se sentiria ao ver <span class="highlight-orange">exatamente para onde cada centavo</span> do seu dinheiro vai, de forma <span class="highlight-orange">automática e visual</span>?</h2>
+            
+            <p class="instruction">Escolha aquela que mais se encaixa com sua realidade</p>
+
+            <div class="options-list">
+                <button class="btn-option" onclick="goToPage('page-question3')">
+                    <span class="option-emoji">🙈</span>
+                    <span>Prefiro não saber.</span>
+                </button>
+                <button class="btn-option" onclick="goToPage('page-question3')">
+                    <span class="option-emoji">😐</span>
+                    <span>Neutro(a).</span>
+                </button>
+                <button class="btn-option selected" onclick="goToPage('page-question3')">
+                    <span class="option-emoji">😌</span>
+                    <span>Aliviado(a)! É disso que eu preciso!</span>
+                </button>
+            </div>
+
+            <div class="footer">© 2025 - FinLeve | Todos os direitos reservados</div>
+        </div>
+
+        <!-- Página 4: Pergunta 3 -->
+        <div class="page" id="page-question3">
+            <div class="logo">
+                <img src="media/logo-finleve.png" alt="FinLeve - Suas finanças, mais leves" class="logo-img">
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>Pergunta 3 de 3</span>
+                    <span class="progress-percentage">100%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+            </div>
+
+            <h2>O que você acharia de um <span class="highlight-orange">sistema completo</span> que te ajudasse a controlar as suas finanças em <span class="highlight-orange">apenas alguns segundos por dia</span>?</h2>
+            
+            <p class="instruction">Escolha a opção que mais se encaixa com sua realidade</p>
+
+            <div class="options-list">
+                <button class="btn-option" onclick="goToPage('page-loading')">
+                    <span class="option-emoji">🤷</span>
+                    <span>Pra mim tanto faz.</span>
+                </button>
+                <button class="btn-option" onclick="goToPage('page-loading')">
+                    <span class="option-emoji">👍</span>
+                    <span>Acharia OK.</span>
+                </button>
+                <button class="btn-option selected" onclick="goToPage('page-loading')">
+                    <span class="option-emoji">🚀</span>
+                    <span>EXCELENTE! Meu tempo é precioso.</span>
+                </button>
+            </div>
+
+            <div class="footer">© 2025 - FinLeve | Todos os direitos reservados</div>
+        </div>
+
+        <!-- Página de Carregamento -->
+        <div class="page" id="page-loading">
+            <div class="loading-container">
+                <h2 class="loading-title">Agora que conhecemos um pouco mais sobre você...</h2>
+                <p class="loading-subtitle">Estamos preparando a melhor experiência para suas finanças</p>
+                
+                <div class="loading-steps">
+                    <div class="loading-step active" id="step-1">
+                        <div class="step-icon">✓</div>
+                        <span class="step-text">Detectando perfil</span>
+                    </div>
+                    <div class="loading-step" id="step-2">
+                        <div class="step-icon"></div>
+                        <span class="step-text">Preparando funcionalidades</span>
+                    </div>
+                    <div class="loading-step" id="step-3">
+                        <div class="step-icon"></div>
+                        <span class="step-text">Sistema disponibilizado</span>
+                    </div>
+                </div>
+                
+                <div class="loading-progress-container">
+                    <div class="loading-progress-header">
+                        <span>Progresso</span>
+                        <span class="loading-progress-percentage" id="loading-percentage">0%</span>
+                    </div>
+                    <div class="loading-progress-bar">
+                        <div class="loading-progress-fill" id="loading-progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Página 5: Resultado -->
+        <div class="page" id="page-result">
+            <div class="logo">
+                <svg viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20" cy="25" r="18" stroke="#1F2937" stroke-width="3" fill="none"/>
+                    <path d="M20 10 C10 10, 8 20, 8 25 C8 35, 15 40, 20 40" stroke="#1F2937" stroke-width="3" fill="none"/>
+                    <text x="42" y="32" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="22" fill="#2d7dd2">FinLeve</text>
+                </svg>
+            </div>
+
+            <div class="fact-card">
+                <div class="fact-header">
+                    <div class="fact-icon">💡</div>
+                    <div class="fact-content">
+                        <h3>Fato: <span class="highlight-orange">86%</span> das pessoas que organizam suas finanças conseguem economizar mais e atingir suas metas.</h3>
+                        <p>Você está a poucos passos de transformar sua relação com o dinheiro!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="article-preview">
+                <div class="article-header">
+                    <span class="article-menu">☰</span>
+                    <span class="article-title">FINANÇAS</span>
+                    <span class="article-search">🔍</span>
+                </div>
+                <div class="article-body">
+                    <div class="article-text">
+                        <h4>86% de quem organiza as finanças consegue economizar mais e realizar suas metas</h4>
+                        <p class="article-author">Por Ícaro Navarro</p>
+                        <p class="article-excerpt">
+                            Um novo levantamento sobre o comportamento financeiro de pequenos empreendedores e autônomos mostrou um dado que chama atenção: <strong>86% das pessoas que organizam suas finanças de forma consistente conseguem economizar mais e atingir suas metas com maior facilidade.</strong><br><br>
+                            O estudo analisou a rotina de quem acompanha entradas e saídas de dinheiro, define um plano mensal e revisa seus números com frequência. Entre esse grupo, foi identificado que a maioria utiliza algum sistema de controle financeiro.
+                        </p>
+                    </div>
+                    <div class="article-image">
+                        <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop" alt="Casal organizando finanças">
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonials">
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"Antes do FinLeve eu vivia no vermelho todo mês. Em 4 meses consegui economizar R$3.200 e finalmente realizei minha viagem dos sonhos para Gramado!"</p>
+                    <div class="testimonial-author">Mariana Silva, 29 anos</div>
+                    <div class="testimonial-role">Professora</div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"Meu maior problema era não saber pra onde ia o dinheiro do meu negócio. Com o FinLeve, aumentei minha margem de lucro em 40% e consegui contratar mais um funcionário!"</p>
+                    <div class="testimonial-author">Rafael Costa, 35 anos</div>
+                    <div class="testimonial-role">Dono de padaria</div>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <h3 class="cta-title"><span>🚀</span> Vamos transformar sua relação com o dinheiro?</h3>
+                <a href="https://wa.me/5588921821794?text=Ol%C3%A1%2C%20tenho%20interesse%20e%20quero%20saber%20mais%21" class="btn-primary" target="_blank" rel="noopener noreferrer" onclick="if(typeof fbq!=='undefined'){fbq('track','PageView');}">
+                    Vamos lá!
+                    <span>→</span>
+                </a>
+            </div>
+
+            <div class="footer">© 2025 - FinLeve | Todos os direitos reservados</div>
+        </div>
+    </div>
+
+    <script>
+        function goToPage(pageId) {
+            // Esconde todas as páginas
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Mostra a página selecionada
+            document.getElementById(pageId).classList.add('active');
+            
+            // Scroll para o topo
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Inicia animação do chat se for a página de pergunta 1
+            if (pageId === 'page-question1') {
+                setTimeout(startChatAnimation, 500);
+            }
+            
+            // Inicia animação de carregamento se for a página de loading
+            if (pageId === 'page-loading') {
+                setTimeout(startLoadingAnimation, 300);
+            }
+        }
+
+        // Animação do chat do WhatsApp
+        function startChatAnimation() {
+            const userMessage = document.getElementById('user-message');
+            const typingText = document.getElementById('typing-text');
+            const messageTime = document.getElementById('message-time');
+            const botTyping = document.getElementById('bot-typing');
+            const botResponse = document.getElementById('bot-response');
+            const inputPlaceholder = document.getElementById('input-placeholder');
+            
+            const message = 'Gastei 120 com gasolina';
+            let charIndex = 0;
+            
+            // Reseta elementos
+            userMessage.classList.add('hidden');
+            botTyping.classList.add('hidden');
+            botResponse.classList.add('hidden');
+            typingText.textContent = '';
+            messageTime.style.opacity = '0';
+            inputPlaceholder.textContent = 'Digite uma mensagem...';
+            
+            // Mostra a mensagem do usuário
+            setTimeout(() => {
+                userMessage.classList.remove('hidden');
+                inputPlaceholder.textContent = message;
+                inputPlaceholder.style.color = '#1F2937';
+                
+                // Anima a digitação
+                const typeInterval = setInterval(() => {
+                    if (charIndex < message.length) {
+                        typingText.textContent += message[charIndex];
+                        charIndex++;
+                    } else {
+                        clearInterval(typeInterval);
+                        // Mostra o horário
+                        messageTime.style.opacity = '1';
+                        
+                        // Mostra bolinhas de digitação do bot
+                        setTimeout(() => {
+                            botTyping.classList.remove('hidden');
+                            
+                            // Mostra resposta do bot
+                            setTimeout(() => {
+                                botTyping.classList.add('hidden');
+                                botResponse.classList.remove('hidden');
+                                inputPlaceholder.textContent = 'Digite uma mensagem...';
+                                inputPlaceholder.style.color = '#999';
+                            }, 1500);
+                        }, 500);
+                    }
+                }, 80);
+            }, 300);
+        }
+
+        // Inicia animação quando a página carrega (se estiver na página 1)
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('page-question1').classList.contains('active')) {
+                setTimeout(startChatAnimation, 800);
+            }
+        });
+
+        // Animação de carregamento
+        function startLoadingAnimation() {
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            const step3 = document.getElementById('step-3');
+            const progressFill = document.getElementById('loading-progress-fill');
+            const percentageText = document.getElementById('loading-percentage');
+            
+            // Reseta os passos
+            step1.className = 'loading-step active';
+            step2.className = 'loading-step';
+            step3.className = 'loading-step';
+            step2.querySelector('.step-icon').textContent = '';
+            step3.querySelector('.step-icon').textContent = '';
+            progressFill.style.width = '0%';
+            percentageText.textContent = '0%';
+            
+            let progress = 0;
+            const totalDuration = 3500; // 3.5 segundos
+            const interval = 30;
+            const increment = 100 / (totalDuration / interval);
+            
+            const progressInterval = setInterval(() => {
+                progress += increment;
+                
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                    
+                    // Completa o último passo
+                    step3.classList.remove('active');
+                    step3.classList.add('completed');
+                    step3.querySelector('.step-icon').textContent = '✓';
+                    
+                    // Vai para a página de resultado após um pequeno delay
+                    setTimeout(() => {
+                        goToPage('page-result');
+                    }, 500);
+                }
+                
+                // Atualiza a barra de progresso
+                progressFill.style.width = progress + '%';
+                percentageText.textContent = Math.floor(progress) + '%';
+                
+                // Atualiza os passos
+                if (progress >= 35 && progress < 70) {
+                    // Passo 1 completo, Passo 2 ativo
+                    step1.classList.remove('active');
+                    step1.classList.add('completed');
+                    step1.querySelector('.step-icon').textContent = '✓';
+                    step2.classList.add('active');
+                } else if (progress >= 70 && progress < 100) {
+                    // Passo 2 completo, Passo 3 ativo
+                    step2.classList.remove('active');
+                    step2.classList.add('completed');
+                    step2.querySelector('.step-icon').textContent = '✓';
+                    step3.classList.add('active');
+                }
+            }, interval);
+        }
+    </script>
+</body>
+</html>
