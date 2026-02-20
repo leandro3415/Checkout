@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        if (location.protocol !== 'file:' && location.pathname.indexOf('/pressel') === 0) {
+            var base = document.createElement('base');
+            base.href = location.origin + '/pressel/';
+            document.head.insertBefore(base, document.head.firstChild);
+        }
+    </script>
     <title>FinLeve - Suas finanças, mais leves</title>
     <!-- Meta Pixel (Facebook) -->
     <script>
@@ -968,7 +975,7 @@
         <!-- Página 2: Pergunta 1 -->
         <div class="page" id="page-question1">
             <div class="logo">
-                <p class="logo-text">FinLeve<span class="tagline">Suas finanças, mais leves</span></p>
+                <img src="media/logo-finleve.png" alt="FinLeve - Suas finanças, mais leves" class="logo-img">
             </div>
 
             <div class="progress-container">
@@ -1066,7 +1073,7 @@
         <!-- Página 3: Pergunta 2 -->
         <div class="page" id="page-question2">
             <div class="logo">
-                <p class="logo-text">FinLeve<span class="tagline">Suas finanças, mais leves</span></p>
+                <img src="media/logo-finleve.png" alt="FinLeve - Suas finanças, mais leves" class="logo-img">
             </div>
 
             <div class="progress-container">
@@ -1104,7 +1111,7 @@
         <!-- Página 4: Pergunta 3 -->
         <div class="page" id="page-question3">
             <div class="logo">
-                <p class="logo-text">FinLeve<span class="tagline">Suas finanças, mais leves</span></p>
+                <img src="media/logo-finleve.png" alt="FinLeve - Suas finanças, mais leves" class="logo-img">
             </div>
 
             <div class="progress-container">
