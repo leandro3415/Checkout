@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/pressell", "destination": "/pressell/index.html" },
+    { "source": "/pressel", "destination": "/pressel/index.html" }
+  ]
+}

@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redirecionando para WhatsApp…</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #0b1220;
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.68);
+        --ring: rgba(255, 255, 255, 0.18);
+        --accent: #22c55e;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+          "Segoe UI Emoji";
+        background: radial-gradient(1200px 800px at 20% 0%, rgba(34, 197, 94, 0.18), transparent 55%),
+          radial-gradient(1000px 700px at 100% 10%, rgba(59, 130, 246, 0.16), transparent 45%),
+          var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        text-align: center;
+      }
+      .spinner {
+        width: 62px;
+        height: 62px;
+        border-radius: 999px;
+        border: 6px solid var(--ring);
+        border-top-color: rgba(34, 197, 94, 0.85);
+        animation: spin 0.9s linear infinite;
+        box-shadow: 0 18px 65px rgba(0, 0, 0, 0.38);
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .title {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+      .sub {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.35;
+        max-width: 520px;
+      }
+      /* sem UI de erro/fallback para o lead */
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="spinner" aria-label="Carregando"></div>
+      <div class="title">Redirecionando para o WhatsApp…</div>
+      <div class="sub">Aguarde um instante.</div>
+    </div>
+
+    <script>
+      // ======== CONFIGURE AQUI ========
+      // Ex.: "https://xxxx.supabase.co"
+      const SUPABASE_URL = "COLE_AQUI_SUA_SUPABASE_URL";
+      // Atenção: essa chave fica visível no frontend. Use policies/view de leitura somente.
+      const SUPABASE_ANON_KEY = "COLE_AQUI_SUA_SUPABASE_ANON_KEY";
+      // Nome exato da tabela (com espaço). Se você usar outra, mude aqui.
+      const TABLE_NAME = "ZAP DISPONIVEL";
+
+      // Colunas (mantém compatibilidade com o seu SQL)
+      const COL_STATUS = "STATUS";
+      const COL_DISP = "DISPONIVEL ?";
+      const COL_NUM = "NUMERO";
+      const COL_INST = "INSTÂNCIA";
+
+      // Quantas vezes tentar antes de desistir
+      const MAX_TRIES = 10;
+      // Intervalo entre tentativas (ms)
+      const RETRY_MS = 1200;
+      // Timeout por request (ms)
+      const REQ_TIMEOUT_MS = 5000;
+      // =================================
+
+      function normalizeDigits(v) {
+        const d = String(v ?? "").replace(/\D/g, "");
+        return d;
+      }
+
+      function waUrlForNumberDigits(digits) {
+        const d = normalizeDigits(digits);
+        if (!d) return "";
+        return `https://wa.me/${d}`;
+      }
+
+      function supabaseRestUrl() {
+        const base = String(SUPABASE_URL || "").trim().replace(/\/+$/, "");
+        return `${base}/rest/v1/${encodeURIComponent(TABLE_NAME)}`;
+      }
+
+      async function fetchEligibleRows() {
+        const url = new URL(supabaseRestUrl());
+        // select colunas necessárias
+        // Em PostgREST/Supabase: no select, colunas com espaço/? precisam de aspas.
+        url.searchParams.set("select", `${COL_NUM},"${COL_INST}",${COL_STATUS},"${COL_DISP}"`);
+        // Sem filtros: vamos ler todas as linhas e filtrar no cliente.
+        // limite
+        url.searchParams.set("limit", "200");
+
+        const ac = new AbortController();
+        const t = setTimeout(() => ac.abort(), REQ_TIMEOUT_MS);
+        try {
+          const r = await fetch(url.toString(), {
+            method: "GET",
+            signal: ac.signal,
+            headers: {
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+              Accept: "application/json",
+            },
+          });
+          const text = await r.text();
+          let json = null;
+          try {
+            json = text ? JSON.parse(text) : null;
+          } catch {
+            // pode ser erro em texto
+          }
+          if (!r.ok) {
+            const detail =
+              (json && (json.message || json.error_description || json.error)) ||
+              (text || `HTTP ${r.status}`);
+            throw new Error(`Supabase REST falhou: ${detail}`);
+          }
+          if (!Array.isArray(json)) return [];
+          return json;
+        } finally {
+          clearTimeout(t);
+        }
+      }
+
+      function chooseRowRoundRobin(rows) {
+        if (!rows.length) return null;
+        const key = "pressel_rr_idx_v1";
+        let idx = 0;
+        try {
+          idx = Number(localStorage.getItem(key) || "0") || 0;
+        } catch {
+          idx = 0;
+        }
+        const picked = rows[idx % rows.length];
+        try {
+          localStorage.setItem(key, String((idx + 1) % 1000000));
+        } catch {
+          // ignore
+        }
+        return picked;
+      }
+
+      function isEligible(row) {
+        try {
+          const st = String(row?.[COL_STATUS] ?? "").trim().toUpperCase();
+          const disp = String(row?.[COL_DISP] ?? "").trim().toUpperCase();
+          return st === "ON" && disp === "SIM";
+        } catch {
+          return false;
+        }
+      }
+
+      async function tryRedirectFlow() {
+        if (!String(SUPABASE_URL).includes("supabase.co") || String(SUPABASE_ANON_KEY).includes("COLE_AQUI")) {
+          return;
+        }
+
+        const rowsAll = await fetchEligibleRows();
+        const eligible = (rowsAll || []).filter(isEligible);
+        if (!eligible.length) return { ok: false, reason: "no_eligible" };
+
+        const picked = chooseRowRoundRobin(eligible);
+        const num = picked?.[COL_NUM];
+        const digits = normalizeDigits(num);
+        const waUrl = waUrlForNumberDigits(digits);
+        if (!waUrl) {
+          return { ok: false, reason: "invalid_number" };
+        }
+
+        window.location.replace(waUrl);
+
+        return { ok: true, waUrl };
+      }
+
+      async function start() {
+        // Não mostrar erros ao lead: mantém a tela de carregamento e tenta para sempre.
+        // Backoff leve para não martelar o Supabase.
+        let waitMs = RETRY_MS;
+        for (;;) {
+          try {
+            const r = await tryRedirectFlow();
+            if (r?.ok) return;
+          } catch {
+            /* ignora */
+          }
+          await new Promise((r) => setTimeout(r, waitMs));
+          waitMs = Math.min(15000, Math.floor(waitMs * 1.25));
+        }
+      }
+
+      // Auto start
+      void start();
+    </script>
+  </body>
+</html>
+
